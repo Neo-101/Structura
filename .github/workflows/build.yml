@@ -1,0 +1,40 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main", "master" ]  # 当你推送代码到主分支时触发
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest  # 使用 GitHub 提供的 Windows 服务器进行编译
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+
+    - name: Restore Packages
+      run: nuget restore OmniArmory.sln
+
+    - name: Build Solution
+      run: msbuild OmniArmory.sln /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Prepare Artifacts
+      run: |
+        mkdir release_output
+        copy OmniArmory.UI\bin\Release\*.exe release_output\
+        copy OmniArmory.UI\bin\Release\*.dll release_output\
+        copy OmniArmory.UI\bin\Release\*.config release_output\
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: OmniArmory-Binaries
+        path: release_output/
