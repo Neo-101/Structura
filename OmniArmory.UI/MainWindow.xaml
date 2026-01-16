@@ -68,8 +68,13 @@
         <Border Grid.Row="0" Background="#2D2D30" Padding="15,10">
             <Grid>
                 <TextBlock Text="OmniArmory" Foreground="White" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
-                <Button Content="Select Folder" HorizontalAlignment="Right" Padding="10,2" 
-                        Click="SelectFolder_Click" Background="#3E3E42" Foreground="White" BorderBrush="#555555"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="ExportButton" Content="Export JSON" Padding="10,2" Margin="0,0,10,0"
+                            Click="ExportButton_Click" Background="#3E3E42" Foreground="White" BorderBrush="#555555"
+                            Visibility="Collapsed"/>
+                    <Button Content="Select Folder" Padding="10,2" 
+                            Click="SelectFolder_Click" Background="#3E3E42" Foreground="White" BorderBrush="#555555"/>
+                </StackPanel>
             </Grid>
         </Border>
 
