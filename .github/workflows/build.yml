@@ -29,9 +29,9 @@ jobs:
     - name: Prepare Artifacts
       run: |
         mkdir release_output
-        copy OmniArmory.UI\bin\Release\*.exe release_output\
-        copy OmniArmory.UI\bin\Release\*.dll release_output\
-        copy OmniArmory.UI\bin\Release\*.config release_output\
+        copy OmniArmory.UI\bin\Release\net48\*.exe release_output\
+        copy OmniArmory.UI\bin\Release\net48\*.dll release_output\
+        copy OmniArmory.UI\bin\Release\net48\*.config release_output\
 
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
