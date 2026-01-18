@@ -38,6 +38,12 @@ We are committed to making Structura the best AI-native file management assistan
     *   **Code Project Analysis**: Analyze project structures, file distributions, and nesting depths.
     *   **General File Organization**: Statistics on file counts and identifying "bloated" or "empty" directories.
 
+## 💻 Compatibility
+
+*   **OS**: Windows 10 / Windows 11 (Supports x64, x86, ARM64)
+*   **Requirement**: .NET Framework 4.8 (Pre-installed on most modern Windows systems)
+*   **Languages**: Auto-detects system language for prompts (English, Chinese, Japanese, Spanish, French).
+
 ## 🛠️ Tech Stack
 *   .NET Framework 4.8
 *   WPF (Windows Presentation Foundation)
@@ -80,3 +86,9 @@ We are committed to making Structura the best AI-native file management assistan
 *   **更多场景扩展**
     *   **代码项目分析**：快速了解一个陌生项目的目录结构、文件分布和层级深度。
     *   **文件整理辅助**：直观地统计文件夹下的文件数量，快速找出那些“臃肿”堆积或“空置”的角落。
+
+## 💻 系统兼容性 (Compatibility)
+
+*   **操作系统**: Windows 10 / Windows 11 (支持 x64, x86, ARM64)
+*   **运行环境**: .NET Framework 4.8 (现代 Windows 系统通常已预装)
+*   **多语言支持**: 自动根据系统语言切换提示词 (支持 英/中/日/西/法)。
