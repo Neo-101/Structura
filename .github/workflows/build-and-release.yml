@@ -52,7 +52,7 @@ jobs:
       run: dotnet restore Structura.UI/Structura.UI.csproj
 
     - name: Build Release
-      run: msbuild Structura.UI/Structura.UI.csproj /p:Configuration=Release /p:Platform="Any CPU"
+      run: dotnet build Structura.UI/Structura.UI.csproj -c Release --no-restore
 
     - name: Prepare Artifact
       id: prepare
