@@ -49,7 +49,7 @@ jobs:
         }
 
     - name: Restore Packages
-      run: nuget restore Structura.UI/Structura.UI.csproj -SolutionDirectory .
+      run: dotnet restore Structura.UI/Structura.UI.csproj
 
     - name: Build Release
       run: msbuild Structura.UI/Structura.UI.csproj /p:Configuration=Release /p:Platform="Any CPU"
