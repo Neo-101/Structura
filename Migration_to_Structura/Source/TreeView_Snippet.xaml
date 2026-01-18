@@ -1,0 +1,48 @@
+<!-- TreeView Resources -->
+<Style TargetType="TreeViewItem">
+    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay, FallbackValue=True}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="#E0E0E0"/>
+    <Setter Property="Padding" Value="2"/>
+</Style>
+
+<HierarchicalDataTemplate DataType="{x:Type shared:DirectoryNode}" ItemsSource="{Binding Children}">
+    <StackPanel Orientation="Horizontal" Margin="2">
+        <TextBlock Text="{Binding Name}" Foreground="Cyan" FontWeight="SemiBold"/>
+        <TextBlock Margin="8,0,0,0" Foreground="Gray" FontSize="11" VerticalAlignment="Center">
+            <Run Text="[" Foreground="DarkGray"/>
+            <Run Text="F:" Foreground="Gray"/>
+            <Run Text="{Binding Stats.DirectFileCount, Mode=OneWay}" Foreground="#D0D0D0"/>
+            <Run Text="(T:" Foreground="Gray"/>
+            <Run Text="{Binding Stats.DeepFileCount, Mode=OneWay}" Foreground="#D0D0D0"/>
+            <Run Text=")" Foreground="Gray"/>
+            <Run Text=" | " Foreground="DarkGray"/>
+            <Run Text="D:" Foreground="Gray"/>
+            <Run Text="{Binding Stats.DirectDirCount, Mode=OneWay}" Foreground="#D0D0D0"/>
+            <Run Text="(T:" Foreground="Gray"/>
+            <Run Text="{Binding Stats.DeepDirCount, Mode=OneWay}" Foreground="#D0D0D0"/>
+            <Run Text=")" Foreground="Gray"/>
+            <Run Text="]" Foreground="DarkGray"/>
+        </TextBlock>
+        <TextBlock Margin="5,0,0,0" VerticalAlignment="Center" FontSize="11">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Stats.IsAccessDenied}" Value="True">
+                            <Setter Property="Text" Value="[! Access Denied]"/>
+                            <Setter Property="Foreground" Value="Yellow"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </StackPanel>
+</HierarchicalDataTemplate>
+
+<!-- TreeView Control -->
+<TreeView x:Name="ResultTree" Background="Transparent" BorderThickness="0" Margin="5"
+          VirtualizingStackPanel.IsVirtualizing="True"
+          VirtualizingStackPanel.VirtualizationMode="Recycling"
+          SelectedItemChanged="ResultTree_SelectedItemChanged"
+          Visibility="Visible"> 
+</TreeView>

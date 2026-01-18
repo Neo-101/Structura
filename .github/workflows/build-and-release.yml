@@ -1,0 +1,102 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+
+    - name: Inject Version Info
+      shell: pwsh
+      run: |
+        $path = "Structura.UI/BuildInfo.cs"
+        if (Test-Path $path) {
+            $content = Get-Content $path -Raw
+            $shortHash = $env:GITHUB_SHA.Substring(0, 7)
+            $buildTime = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+            
+            $content = $content.Replace('const string CommitHash = "Dev-Local";', "const string CommitHash = `"$shortHash`";")
+            $content = $content.Replace('const string BuildTime = "Local-Build";', "const string BuildTime = `"$buildTime`";")
+            
+            if ($env:GITHUB_REF -match "refs/tags/v(.+)") {
+                $version = $matches[1]
+                $content = $content.Replace('const string Version = "1.0.0";', "const string Version = `"$version`";")
+            }
+            
+            Set-Content $path $content
+            Write-Host "Version info injected into $path"
+        } else {
+            Write-Warning "$path not found, skipping version injection"
+        }
+
+    - name: Restore Packages
+      run: nuget restore Structura.UI/Structura.UI.csproj -SolutionDirectory .
+
+    - name: Build Release
+      run: msbuild Structura.UI/Structura.UI.csproj /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Prepare Artifact
+      id: prepare
+      shell: pwsh
+      run: |
+        $sourceExe = "Structura.UI\bin\Release\net48\Structura.UI.exe"
+        if (-not (Test-Path $sourceExe)) {
+            Write-Error "Build artifact not found at $sourceExe"
+            exit 1
+        }
+        
+        $artifactName = "Structura_Latest.exe"
+        $releaseName = "Latest Build"
+        $tagName = "latest"
+        
+        if ($env:GITHUB_REF -match "refs/tags/v(.+)") {
+            $version = $matches[1]
+            $artifactName = "Structura_v$version.exe"
+            $releaseName = "Release v$version"
+            $tagName = $env:GITHUB_REF.Replace("refs/tags/", "")
+        }
+        
+        Copy-Item $sourceExe $artifactName
+        echo "artifact_path=$artifactName" >> $env:GITHUB_OUTPUT
+        echo "release_name=$releaseName" >> $env:GITHUB_OUTPUT
+        echo "tag_name=$tagName" >> $env:GITHUB_OUTPUT
+
+    # Logic A: Update 'latest' tag for main branch pushes
+    - name: Update Latest Tag
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git tag -fa latest -m "Latest release"
+        git push origin latest --force
+
+    - name: Create/Update Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.prepare.outputs.tag_name }}
+        name: ${{ steps.prepare.outputs.release_name }}
+        files: ${{ steps.prepare.outputs.artifact_path }}
+        prerelease: false
+        draft: false
+        make_latest: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

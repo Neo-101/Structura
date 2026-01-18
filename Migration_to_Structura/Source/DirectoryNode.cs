@@ -9,7 +9,12 @@ namespace OmniArmory.Shared
         public string FullPath { get; set; }
         public FileStatModel Stats { get; set; } = new FileStatModel();
         
+        public List<FileEntry> Files { get; set; } = new List<FileEntry>();
+        
         public List<DirectoryNode> ChildrenList { get; set; } = new List<DirectoryNode>();
+
+        [JsonIgnore]
+        public DirectoryNode Parent { get; set; }
 
         [JsonIgnore]
         public IEnumerable<IDirectoryNode> Children => ChildrenList;

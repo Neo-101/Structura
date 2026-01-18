@@ -18,7 +18,31 @@ namespace OmniArmory.Core
         {
             ct.ThrowIfCancellationRequested();
 
-            var dirInfo = new DirectoryInfo(path);
+            // Handle Long Paths (> 248 chars for Directory, 260 for File)
+            // While .NET 4.6.2+ supports long paths without \\?\, Win7 often needs it.
+            // And if manifest isn't respected (Win7), we need \\?\.
+            // Safest way for scanning is to ensure path is valid for DirectoryInfo.
+            // But modifying 'path' to have \\?\ prefix might propagate weird paths to UI.
+            // We'll trust the Manifest for Win10, and for Win7 users might face limits unless we use \\?\.
+            // Let's rely on standard DirectoryInfo for now as per "Silent Recovery".
+            // If PathTooLongException occurs, we catch it.
+            
+            DirectoryInfo dirInfo;
+            try 
+            {
+                dirInfo = new DirectoryInfo(path);
+            }
+            catch (PathTooLongException)
+            {
+                // Fallback attempt with \\?\ prefix? 
+                // Note: \\?\ only works with absolute paths.
+                // But DirectoryInfo might still throw if runtime checks are strict.
+                // We'll just mark as Partial/Error for now to avoid crashing.
+                var errNode = new DirectoryNode(path, System.IO.Path.GetFileName(path));
+                errNode.Stats.IsPartial = true;
+                return errNode;
+            }
+
             var node = new DirectoryNode(dirInfo.FullName, dirInfo.Name);
 
             // Report progress (1 folder scanned)
@@ -38,10 +62,14 @@ namespace OmniArmory.Core
                         continue;
                     }
 
-                    if (info is FileInfo)
+                    if (info is FileInfo fileInfo)
                     {
                         node.Stats.DirectFileCount++;
                         node.Stats.DeepFileCount++;
+                        
+                        var fileEntry = new FileEntry(fileInfo.FullName, fileInfo.Length);
+                        fileEntry.Parent = node;
+                        node.Files.Add(fileEntry);
                     }
                     else if (info is DirectoryInfo subDir)
                     {
@@ -50,11 +78,13 @@ namespace OmniArmory.Core
 
                         // Determine if we should recurse
                         bool shouldRecurse = true;
+                        bool includeInTree = true;
 
                         // Check MaxDepth
                         if (config.MaxDepth > 0 && currentDepth >= config.MaxDepth)
                         {
                             shouldRecurse = false;
+                            includeInTree = false; // Don't show items beyond max depth
                         }
 
                         // Check Reparse Points
@@ -78,6 +108,8 @@ namespace OmniArmory.Core
                                 if (!isOffline)
                                 {
                                     shouldRecurse = false;
+                                    // But we still want to see the reparse point in the tree (as a leaf)
+                                    includeInTree = true;
                                 }
                             }
                         }
@@ -85,6 +117,7 @@ namespace OmniArmory.Core
                         if (shouldRecurse)
                         {
                             var childNode = ScanRecursive(subDir.FullName, config, currentDepth + 1, progress, ct);
+                            childNode.Parent = node;
                             node.ChildrenList.Add(childNode);
                             
                             // Post-Order Accumulation
@@ -92,6 +125,13 @@ namespace OmniArmory.Core
                             node.Stats.DeepDirCount += childNode.Stats.DeepDirCount;
                             
                             if (childNode.Stats.IsPartial) node.Stats.IsPartial = true;
+                        }
+                        else if (includeInTree)
+                        {
+                            // Even if we don't recurse (ReparsePoint), we want the folder to appear in the tree
+                            var childNode = new DirectoryNode(subDir.FullName, subDir.Name);
+                            childNode.Parent = node;
+                            node.ChildrenList.Add(childNode);
                         }
                     }
                 }
@@ -101,7 +141,11 @@ namespace OmniArmory.Core
                 node.Stats.IsAccessDenied = true;
                 node.Stats.IsPartial = true;
             }
-            catch (Exception ex)
+            catch (PathTooLongException)
+            {
+                 node.Stats.IsPartial = true;
+            }
+            catch (Exception)
             {
                 // General error handling
                 node.Stats.IsPartial = true;

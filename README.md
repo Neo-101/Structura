@@ -1,26 +1,82 @@
-# OmniArmory
+# Structura
 
-**A high-performance Windows toolset designed for speed, efficiency, and modern usability.**
+[![Download Latest EXE](https://img.shields.io/github/v/release/Neo-101/Structura?label=Download%20Latest%20EXE)](https://github.com/Neo-101/Structura/releases/latest)
 
-## Vision
-OmniArmory is built to be a lightweight, non-intrusive, and extremely fast utility suite for Windows power users. It prioritizes performance (non-blocking I/O, low memory footprint) and compatibility across Windows 7, 10, and 11.
+[English](#structura) | [中文说明](#structura-中文说明)
 
-## Features
-- **High-Performance Scanning**: Utilize advanced non-blocking asynchronous I/O to scan thousands of files in seconds without freezing the UI.
-- **Deep-Limited Directory Scanning**: Analyze directory structures with configurable depth limits.
-- **Dual-Dimension Telemetry**:
-  - **Direct Count**: Items strictly within the current folder.
-  - **Deep Count**: Recursive total of all items in the branch (calculated via efficient post-order traversal).
-- **Modern WPF UI**: A sleek, dark-themed interface supporting Drag & Drop interactions and virtualized tree views for handling large datasets.
-- **Broad Compatibility**: Targeted for .NET Framework 4.8 to ensure native support on Windows 7 while leveraging Fluent Design aesthetics on Windows 11.
+Structura is a high-performance directory structure analysis tool designed specifically for **Obsidian** users. It rapidly scans your vault, generates a clear tree view, and exports a JSON format optimized for LLMs (like ChatGPT, DeepSeek).
 
-## Current Status
-- ✅ **Core Engine**: High-performance `TreeScanner` implemented with `DirectoryInfo.EnumerateFileSystemInfos` and smart Reparse Point handling.
-- ✅ **GUI**: Fully functional WPF interface with virtualization and async progress reporting.
-- 🚧 **JSON Export**: Functionality in progress (data models ready).
+Whether your knowledge base is chaotic or you just want to reorganize your notes, Structura helps you extract the "skeleton" of your vault so AI can help you plan a better structure.
 
-## Getting Started
-1. Open `OmniArmory.sln` in Visual Studio.
-2. Build the solution (Target: `.NET Framework 4.8`).
-3. Run `OmniArmory.UI`.
-4. Drag and drop any folder onto the window to start analyzing.
+## 🎯 Use Cases
+
+*   **Obsidian Vault Refactoring**: When your notes become messy, Structura provides the most accurate "map" for AI to help you re-categorize and restructure.
+
+## 🚀 Usage
+
+1.  **Download**: Click the **"Download Latest EXE"** badge above to get the latest `Structura.exe`.
+2.  **Run**: Double-click to launch (Single-file portable app, no installation required).
+3.  **Scan**:
+    *   Click the `...` button next to the path bar and select your Obsidian vault folder.
+    *   Click **Scan**.
+4.  **Export for AI**:
+    *   Click **Export & Copy JSON**.
+    *   The tool will generate the structure JSON and **automatically copy it to your clipboard**.
+    *   Paste it into ChatGPT, Claude, or DeepSeek along with your refactoring request.
+
+## 🔮 Roadmap
+
+We are committed to making Structura the best AI-native file management assistant.
+
+*   **Obsidian Deep Integration**
+    *   Smart recognition of `.obsidian` config and plugin structures.
+    *   Analyze attachment associations, calculate "backlink density" and "tag distribution", merging this metadata into the structure tree.
+*   **🛡️ Privacy Mode**
+    *   One-click "desensitization".
+    *   Automatically replace sensitive folder/file names with placeholders like `Folder_A` before exporting to LLMs.
+*   **Future Expansions**
+    *   **Code Project Analysis**: Analyze project structures, file distributions, and nesting depths.
+    *   **General File Organization**: Statistics on file counts and identifying "bloated" or "empty" directories.
+
+## 🛠️ Tech Stack
+*   .NET Framework 4.8
+*   WPF (Windows Presentation Foundation)
+*   Fody & Costura (Single-file bundling)
+
+---
+
+# Structura (中文说明)
+
+**Structura** 是一个专为 **Obsidian** 用户设计的高性能目录结构分析工具。它能飞速扫描你的知识库，生成清晰的树状结构视图，并导出 LLM（如 ChatGPT、DeepSeek）可读的 JSON 格式。
+
+无论你是想重构混乱的 Obsidian 知识库，还是清理陈旧的笔记，Structura 都能帮你把“目录结构”提取出来，让 AI 帮你出谋划策。
+
+## 🎯 适用场景 (Use Cases)
+
+*   **Obsidian 知识库重构**：当你的笔记库变得杂乱无章，想让 AI 帮忙重新规划分类时，Structura 能提供最精准的“地图”。
+
+## 🚀 使用方法 (Usage)
+
+1.  **下载**: 点击页面顶部的 **"Download Latest EXE"** 徽章，下载最新版本的 `Structura.exe`。
+2.  **运行**: 双击运行程序（单文件绿色版，无需安装）。
+3.  **扫描**:
+    *   点击路径栏旁边的 `...` 按钮，选择你的 Obsidian 库根目录。
+    *   点击 **Scan** 按钮开始分析。
+4.  **导出给 AI**:
+    *   点击 **Export & Copy JSON** 按钮。
+    *   程序会自动生成目录结构的 JSON 数据，并**自动复制到你的剪贴板**。
+    *   打开 ChatGPT、Claude 或 DeepSeek，直接 **粘贴**，并附上你的重构需求。
+
+## 🔮 未来计划 (Roadmap)
+
+我们致力于让 Structura 成为 AI 时代的最佳文件管理助手。
+
+*   **Obsidian 深度集成**
+    *   智能识别 `.obsidian` 配置文件夹及插件结构。
+    *   分析附件关联情况，统计“双向链接密度”和“标签分布”，并将这些元数据合并到结构树中，让 AI 更懂你的知识网络。
+*   **🛡️ 隐私保护模式 (Privacy Mode)**
+    *   支持一键“脱敏”功能。
+    *   在导出给 LLM 分析前，自动将敏感的文件夹或文件名替换为 `Folder_A`, `Folder_B` 等代号，确保你的隐私数据安全不外泄。
+*   **更多场景扩展**
+    *   **代码项目分析**：快速了解一个陌生项目的目录结构、文件分布和层级深度。
+    *   **文件整理辅助**：直观地统计文件夹下的文件数量，快速找出那些“臃肿”堆积或“空置”的角落。
